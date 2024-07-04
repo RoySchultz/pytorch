@@ -3092,6 +3092,13 @@ Please use `add.register_fake` to add an fake impl.""",
         with self.assertRaisesRegex(RuntimeError, "may not alias"):
             numpy_sin_inplace(x)
 
+    def test_library_schema_infer(self):
+        def foo_impl(x: torch.Tensor) -> torch.Tensor:
+            return x.sin()
+
+        schema = torch.library.Schema("myop", signature=foo_impl, mutates_args={})
+        self.assertExpectedInline(schema, "myop(Tensor x) -> Tensor")
+
 
 class MiniOpTestOther(CustomOpTestCaseBase):
     test_ns = "mini_op_test"
